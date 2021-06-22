@@ -8,6 +8,7 @@ Vue.use(Vuex)
 
 const state = {
     value: '', // 左侧输入的文本
+    lastValues: [''],//历史输入的文本，用来撤销操作：ctrl+z
     htmlString: '',// 右侧渲染的HTML
     textareaNode: null, // textarea节点
     selectionStart:0,// 光标的开始位置
@@ -51,6 +52,17 @@ const mutations = {
             value = value.slice(0, selectionStart)+char1+char2+value.slice(selectionEnd)
         }      
         state.value = value
+    },
+    addHistory(state){
+        const {lastValues} = state
+        if(state.value!==lastValues[lastValues.length-1]){
+            state.lastValues.push(state.value)
+        }
+    },
+    rollback(state){
+        if(state.lastValues.length>0){
+            state.value = state.lastValues.pop()
+        } 
     }
 }
 
@@ -70,6 +82,12 @@ const actions = {
     },
     setNode({commit}, node){
         commit('setNode', node)
+    },
+    addHistory({commit}, history){
+        commit('addHistory', history)
+    },
+    rollback({commit}){
+        commit('rollback')
     }
 }
 
