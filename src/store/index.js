@@ -41,7 +41,7 @@ const mutations = {
     // 添加粗体，斜体等, wrap是否包裹,
     //  wrap=true时就在光标处添加*或者用*包裹选中的内容，
     // 否则wrap=false 且 未选中内容时,直接插入char
-    addStyles(state, {char1, char2, wrap}){
+    addStyles(state, {char1, char2, wrap=true}){
         let {value} = state
         const {selectionStart, selectionEnd} = state
         if(wrap){

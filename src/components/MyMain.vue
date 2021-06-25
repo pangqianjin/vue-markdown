@@ -1,11 +1,13 @@
 <template>
     <el-row>
-        <el-col :span="12" id="writing-area">
+        <el-col :span="14" id="writing-area">
             <el-input ref="textarea" type="textarea" placeholder="请输入markdown语法"
-                @keyup.native="handleKeyupCtrl($event)"
+                @keydown.ctrl.exact.native="handleKeyupCtrl($event)"
+                @keydown.tab.exact.native.prevent="handleKeydownTab($event)"
+                @keydown.ctrl.shift.exact.native.prevent="handleKeydownCtrlShift($event)"
                 v-model="text" autofocus :rows="22"></el-input>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="10">
             <el-card class="box-card" id="preview-area">
                 <div v-html="htmlString"></div>
             </el-card>
@@ -42,10 +44,23 @@ export default {
                     this.rollback()
                     break
                 case 66:// ctrl+B
-                    this.addStyles({char1:'**',char2:'**',wrap:true})
+                    this.addStyles({char1:'**',char2:'**'})
                     break
                 case 73://ctrl+I
-                    this.addStyles({char1:'*',char2:'*',wrap:true})
+                    this.addStyles({char1:'*',char2:'*'})
+                    break
+            }
+        },
+        handleKeydownTab(){// tab键换成4个空格
+            this.addStyles({char1:'  ',char2:'  ',wrap:false})
+        },
+        handleKeydownCtrlShift(event){
+            switch(event.keyCode){
+                case 75:// ctrl+shift+K
+                    this.addStyles({char1:'```\n\n',char2:'```',wrap:false})
+                    break
+                case 73://ctrl+shift+I
+                    this.addStyles({char1:'![]()',char2:'',wrap:false})
                     break
             }
         }
