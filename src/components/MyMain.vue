@@ -1,16 +1,17 @@
 <template>
     <el-row>
-        <el-col :span="14" id="writing-area">
+        <el-col :span="13" id="writing-area">
             <el-input ref="textarea" type="textarea" placeholder="请输入markdown语法"
                 @keydown.ctrl.exact.native="handleKeyupCtrl($event)"
                 @keydown.tab.exact.native.prevent="handleKeydownTab($event)"
                 @keydown.ctrl.shift.exact.native.prevent="handleKeydownCtrlShift($event)"
                 @dragover.native.prevent
                 @drop.native.prevent="dropFile($event)"
+                @mousewheel.native="handleOnTextareaScroll($event)"
                 v-model="text" autofocus :rows="22"></el-input>
         </el-col>
-        <el-col :span="10">
-            <el-card class="box-card" id="preview-area">
+        <el-col :span="11">
+            <el-card id="preview-area" @mousewheel.native="handleOnPreviewScroll($event)" ref='preview'>
                 <div v-html="htmlString"></div>
             </el-card>
         </el-col>
@@ -66,6 +67,20 @@ export default {
                     break
             }
         },
+        handleOnTextareaScroll(event){
+            const { scrollHeight, scrollTop, clientHeight } = event.target
+            const scale = scrollTop / (scrollHeight - clientHeight)  // 计算当前block的滚动比例
+            // 得到目标block区域
+            const block = this.$refs.preview.$el
+            this.$nextTick(()=>block.scrollTop = block.scrollHeight * scale)
+        },
+        handleOnPreviewScroll(){
+            const { scrollHeight, scrollTop, clientHeight } = this.$refs.preview.$el
+            const scale = scrollTop / (scrollHeight - clientHeight)
+            // 得到目标block区域
+            const block = this.$refs.textarea.$refs.textarea
+            this.$nextTick(()=>block.scrollTop = block.scrollHeight * scale)
+        },
         dropFile(event){// 拖放文件即读取
             const file = event.dataTransfer.files[0]
             const reader = new FileReader();
@@ -86,6 +101,7 @@ export default {
 </script>
 <style>
     #preview-area{
+        padding-left: 20px;
         min-height: 29em;
         max-height: 29em;
         overflow-y: scroll;
