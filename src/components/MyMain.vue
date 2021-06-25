@@ -5,6 +5,8 @@
                 @keydown.ctrl.exact.native="handleKeyupCtrl($event)"
                 @keydown.tab.exact.native.prevent="handleKeydownTab($event)"
                 @keydown.ctrl.shift.exact.native.prevent="handleKeydownCtrlShift($event)"
+                @dragover.native.prevent
+                @drop.native.prevent="dropFile($event)"
                 v-model="text" autofocus :rows="22"></el-input>
         </el-col>
         <el-col :span="10">
@@ -63,6 +65,13 @@ export default {
                     this.addStyles({char1:'![]()',char2:'',wrap:false})
                     break
             }
+        },
+        dropFile(event){// 拖放文件即读取
+            const file = event.dataTransfer.files[0]
+            const reader = new FileReader();
+
+            reader.readAsText(file, "utf-8");
+            reader.onload = ()=>this.text=''.concat(reader.result)
         }
     },
     watch:{
